@@ -1,2 +1,2 @@
-# p8live
-Test to deploy p8 game
+# Mallow
+My fork of the Pico-8 game "Mellow" by lucatron
