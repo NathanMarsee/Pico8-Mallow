@@ -39,6 +39,9 @@ function get_tile(gx,gy)
 end
 
 levels_cleared=0
+bonus=0
+timer=50
+gameover=false
 
 transition={
  active=false,
@@ -100,7 +103,7 @@ function gen_level()
   --number of circles to try
   --to generate
   local n=({
-   1,1,2,3,3,50,100,500
+   1,2,3,4,4,55,110,550
   })[i]
   
 	 for j=0,n do
@@ -115,7 +118,7 @@ function gen_level()
 	  for c in all(cs) do
 	   local dx=x-c.x
 	   local dy=y-c.y
-	   local minr=r+c.r
+	   local minr=r+c.r-2+(levels_cleared)
 	   
 	   --first two checks are
 	   --for performance
@@ -188,8 +191,8 @@ function gen_level()
  --init pickups
  pickups={}
  pickup_count=0
- local np=4+levels_cleared*2.5
- for i=1,rnd2(np,np*1.5) do
+ local np=4+levels_cleared*2
+ for i=1,rnd2(np,np*1.3) do
   local c=cs[1+flr(rnd(#cs))]
   if not c.picked then
    c.picked=true
@@ -294,6 +297,7 @@ end
 lix=0
 liy=0
 function _update60()
+if not gameover then
  --directional input
  local ix,iy=0,0
  if(btn(0))ix-=1
@@ -306,6 +310,13 @@ function _update60()
   intro.update()
  end
  
+--timer
+ if timer>=0 then
+ timer=timer-0.01667
+ else
+ gameover=true
+ end
+
  --busy transitioning
  if transition.active then
   if transition.phase==0 then
@@ -342,6 +353,7 @@ function _update60()
  --completed level?
  if pickup_count==#pickups then
   --begin level transition
+  timer=timer+15
   transition.active=true
   transition.t=0
   transition.w=2
@@ -360,7 +372,7 @@ function _update60()
    --start roll!
    p.cr=false
    local v=min(p.crt/8,3)
-   local a=p.f/4
+   local a=p.f/3.5
    p.vx=cos(a)*v
    p.vy=sin(a)*v
   else
@@ -414,7 +426,7 @@ function _update60()
 		 --movement
 		 local a=is_water and 0.1 or 0.15
 		 local da=p.j and 0 or (is_water and 0.5 or a)
-		 local mv=p.j and (p.jw and 1 or 2) or (is_water and 1 or 2)
+		 local mv=p.j and (p.jw and 1 or 1.5) or (is_water and 1 or 1.7)
 		 local v=sqrt(p.vx^2+p.vy^2)
 		 
 		 --deaccleration
@@ -527,7 +539,7 @@ function _update60()
 		 if p.j then
 		  --currently jumping
 		  --gravity
-		  p.vz-=0.1
+		  p.vz-=0.15
 		  
 		  p.z+=p.vz
 		  
@@ -587,7 +599,7 @@ function _update60()
 		   --2 jump is shorter
 		   p.j=true
 		   p.jw=is_water
-					p.vz=is_water and 0.65 or 1.25
+					p.vz=is_water and 0.8 or 1.75
 					
 					--boing!
 					sfx(is_water and 58 or 60)
@@ -632,6 +644,8 @@ function _update60()
 		   --mark collected
 		   pick.active=false
 		   pickup_count+=1
+		   timer=timer+1
+		   bonus=bonus+1
 		   
 		   --boop
 		   sfx(pickup_count>=#pickups and 59 or 63)
@@ -662,6 +676,23 @@ function _update60()
  cam.y=p.y+cam.dy
  
  update_particles()
+ else
+ --gameover
+ if (btnp(5)) then
+  gameover=false
+  levels_cleared=0
+  bonus=0
+  timer=50
+  gameover=false 
+  intro.done=false
+  intro.active=true
+  intro.fade=true
+  intro.fadet=0
+  intro.t=0
+  intro.k=1
+  _init()
+ end
+ end
 end
 
 function sign(x)
@@ -809,6 +840,7 @@ tile_colors={
 }
 
 function _draw()
+if not gameover then
  cls(12)
  
  camera(cam.x-64,cam.y-64)
@@ -914,6 +946,8 @@ function _draw()
 	   end
 	  end
 	 end
+	print("score:"..(10*levels_cleared)+bonus, cam.x+32,cam.y-63, 7)
+    print("time:"..ceil(timer), cam.x-63,cam.y-63, 7)
  end
  
  --particles 
@@ -1064,6 +1098,12 @@ function _draw()
  --debug
  --?stat(1),1,1,0
  --for i=1,4 do flip() end
+ else
+ --gameover
+  rectfill(0, 50, 127, 78, 0)
+  print("game over! score:"..(10*levels_cleared)+bonus, 25, 57, 7)
+  print("press ❎ to restart", 25, 68, 7)
+ end
 end
 __gfx__
 00000000000000000000000000000000bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb3333333300000000000000000011011000011100001101100000000000000000
