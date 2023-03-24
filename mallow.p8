@@ -946,8 +946,10 @@ if not gameover then
 	   end
 	  end
 	 end
-	print("score:"..(10*levels_cleared)+bonus, cam.x+32,cam.y-63, 7)
-    print("time:"..ceil(timer), cam.x-63,cam.y-63, 7)
+	if hud_is_shown then
+	 print("score:"..(10*levels_cleared)+bonus, cam.x+32,cam.y-63, 7)
+     print("time:"..ceil(timer), cam.x-63,cam.y-63, 7)
+	end
  end
  
  --particles 
