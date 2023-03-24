@@ -1,4 +1,6 @@
 # Mallow
+![Screenshot](mallow_0.png)
+
 My fork of the Pico-8 game "Mellow" by lucatron: https://www.lexaloffle.com/bbs/?tid=36520
 
 Changes: 
