@@ -3,7 +3,7 @@
 
 My fork of the Pico-8 game "Mellow" by lucatron: https://www.lexaloffle.com/bbs/?tid=36520
 
-Play it here! https://nathanmarsee.github.io/Pico8-Mallow/ (I reccomend playing with a controller.)
+Play it here! https://nathanmarsee.github.io/Pico8-Mallow/ (I recommend playing with a controller.)
 
 
 
